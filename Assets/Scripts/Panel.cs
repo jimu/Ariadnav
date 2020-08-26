@@ -30,7 +30,7 @@ public class Panel : MonoBehaviour
     // The current step
     int state = -1;
 
-    // List of steps text (mutli-line Text)
+    // List of steps text (mutli-line Text Bubble)
     Text stepsText;
 
     // List of all artwork contained in the steps for this panel
@@ -60,7 +60,8 @@ public class Panel : MonoBehaviour
     }
 
 
-    // Store a list all artwork contained in the steps in Dictionary "artwork"
+    // Compile a list all artwork in all steps defined in the Panel.
+    // This list is used to hide artwork that ISN'T included in each step.
     void FindAllArtwork()
     {
         foreach (Step step in steps)
