@@ -48,13 +48,12 @@ public class Panel : MonoBehaviour
 
     void Awake()
     {
+        stepsText = GameObject.Find("StepsText").GetComponent<Text>();
+        audioSource = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<AudioSource>();
+
         FindAllArtwork();
 
-        stepsText = GameObject.Find("StepsText").GetComponent<Text>();
-
         InitLanguage();
-
-        audioSource = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<AudioSource>();
 
         SetState(0);
     }
@@ -70,7 +69,8 @@ public class Panel : MonoBehaviour
     }
 
 
-    // Called when a clickable object has been clicked. The game object name is supplied
+    // Called when a clickable object has been clicked.
+    // Parameter: art - The game object that was clicked
     public void OnClick(GameObject art)
     {
         Debug.Log("OnClick(" + art.name + ") state=" + state);
