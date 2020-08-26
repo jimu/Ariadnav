@@ -7,6 +7,9 @@ using UnityEngine.UI;
 #pragma warning disable 0649 
 
 
+// Assumes Main Camera has an AudioSource component
+
+
 public class Panel : MonoBehaviour
 {
     // A single step
@@ -14,9 +17,9 @@ public class Panel : MonoBehaviour
     public class Step
     {
         public string Notes;
-
         public string stepSpanish;
         public string stepEnglish;
+        public AudioClip sfx;
         public GameObject[] stepObjects;
     }
 
@@ -25,7 +28,7 @@ public class Panel : MonoBehaviour
     [SerializeField] public Step[] steps;
 
     // The current step
-    int state;
+    int state = -1;
 
     // List of steps text (mutli-line Text)
     Text stepsText;
@@ -39,6 +42,8 @@ public class Panel : MonoBehaviour
     static bool isSpanish = true;
     GameObject spanishButton, englishButton;
 
+    AudioSource audioSource;
+
 
 
     void Awake()
@@ -46,9 +51,10 @@ public class Panel : MonoBehaviour
         FindAllArtwork();
 
         stepsText = GameObject.Find("StepsText").GetComponent<Text>();
-        stepsText.text = "";
 
         InitLanguage();
+
+        audioSource = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<AudioSource>();
 
         SetState(0);
     }
@@ -83,16 +89,15 @@ public class Panel : MonoBehaviour
 
     public void SetSpanish(bool newIsSpanish)
     {
+        if (newIsSpanish != isSpanish)
+            audioSource.Play();
+
         isSpanish = newIsSpanish;
         spanishButton.SetActive(isSpanish);
         englishButton.SetActive(!isSpanish);
 
-        if (stepsText.text != "")
-        {
-            stepsText.text = "";
-            for (int i = 0; i <= state; ++i)
-                DisplayStepText(i);
-        }
+        for (int i = 0; i <= state; ++i)
+            DisplayStepText(i);
     }
 
 
@@ -100,6 +105,12 @@ public class Panel : MonoBehaviour
     // Also update step text
     void SetState(int newState)
     {
+        if (state >= 0 && steps[state].sfx != null)
+        {
+            audioSource.Stop();
+            audioSource.PlayOneShot(steps[state].sfx);
+        }
+
         state = newState;
 
         Debug.Log("SetState(" + state + ")");
@@ -119,6 +130,8 @@ public class Panel : MonoBehaviour
 
     void DisplayStepText(int state)
     {
+        if (state == 0)
+            stepsText.text = "";
         string text = isSpanish ? steps[state].stepSpanish : steps[state].stepEnglish;
         if (!string.IsNullOrEmpty(text))
             stepsText.text += (state + 1).ToString() + $". {text}\n";
